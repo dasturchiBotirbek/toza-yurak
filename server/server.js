@@ -295,6 +295,20 @@ app.use(
     })
 );
 
+function isLikelyTelegramMiniAppOrigin(origin) {
+    try {
+        const u = new URL(origin);
+        const h = String(u.hostname || "").toLowerCase();
+        if (!h) return false;
+        if (h === "web.telegram.org" || h === "telegram.org") return true;
+        if (h.endsWith(".telegram.org")) return true;
+        if (h === "t.me") return true;
+    } catch (e) {
+        return false;
+    }
+    return false;
+}
+
 app.use(
     cors({
         credentials: true,
@@ -307,6 +321,9 @@ app.use(
                 return callback(null, true);
             }
             if (list.indexOf(origin) !== -1) {
+                return callback(null, true);
+            }
+            if (isLikelyTelegramMiniAppOrigin(origin)) {
                 return callback(null, true);
             }
             console.warn("[cors] rad etildi:", origin);
