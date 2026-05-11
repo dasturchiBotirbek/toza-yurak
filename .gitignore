@@ -1,0 +1,23 @@
+# Mahalliy sirlar
+server/.env
+.env
+.env.local
+
+# SQLite va yuklangan fayllar (deployda yangi DB yaratiladi)
+server/data/*.db
+server/data/*.db-shm
+server/data/*.db-wal
+server/data/receipt_files/
+server/data/backups/
+
+# Netlify build chiqishi (commit qilinmasin)
+api-config.json
+_redirects
+
+# Node
+node_modules/
+server/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

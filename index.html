@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070d0a">
+<meta name="color-scheme" content="dark">
+<!--
+  Deploy: ty-api-relative=yes — /api shu domen (Docker/Render) yoki Netlify _redirects proksi.
+  Mahalliy dev: ty-api-base=http://127.0.0.1:3847 va ty-api-relative=no qiling.
+-->
+<meta name="ty-api-base" content="">
+<meta name="ty-api-relative" content="yes">
+<!-- Netlify/GitHub Pages + alohida API: haqiqiy Express HTTPS manzil (oxirida / yo'q). Bo'sh bo'lsa faqat nisbiy /api sinanadi. -->
+<meta name="ty-api-fallback" content="">
+<title>Toza Yurak Sahiy Qollar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bad+Script&family=Marck+Script&family=Outfit:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">Toza Yurak Sahiy Qollar</div>
+  <div class="topbar-right">
+    <button type="button" class="btn-sq" id="topbarMenuBtn" data-i18n-aria="aria.openMenu" aria-label="Открыть меню">⋮</button>
+    <button type="button" class="btn-sq" id="topbarCloseBtn" data-i18n-aria="aria.closeApp" aria-label="Закрыть приложение">✕</button>
+  </div>
+</div>
+
+  <div class="app-accent-strip app-accent-strip--header" aria-hidden="true"></div>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <button type="button" class="btn-sq" id="headerMenuBtn">☰</button>
+    <img id="logoImg" class="logo-img" src="photo_2026-05-05_01-08-10 (3).jpg" alt="Toza Yurak logo">
+  </div>
+  <div class="user-pill" id="userPillBtn" role="button" tabindex="0">
+    <div class="ava" id="userPillAva" aria-hidden="true">…</div>
+    <span class="user-pill__text" id="userPillName"></span>
+  </div>
+  <button type="button" class="btn-sq" id="settingsBtn">⚙️</button>
+</div>
+<div class="sep"></div>
+
+<div class="content">
+<div id="appSyncBanner" class="app-sync-banner" hidden role="status" aria-live="polite">
+  <div class="app-sync-banner__inner">
+    <span class="app-sync-banner__icon" aria-hidden="true">⚠</span>
+    <p class="app-sync-banner__msg" id="appSyncBannerMsg"></p>
+    <button type="button" class="app-sync-banner__btn" id="appSyncRetryBtn"></button>
+  </div>
+</div>
+
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="badge" data-i18n="home.hero.badge">⚡ SAHIY QO'LLAR</div>
+    <h1 data-i18n="home.hero.title">Xush kelibsiz<br><span class="hero-brand">Toza Yurak</span><br>Sahiy Qo'llar!</h1>
+    <p data-i18n="home.hero.description">Ezgulik va sahiylik dasturi — birga yaxshilik qilaylik, yurakdan!</p>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci g">$</div>
+      <div class="ct"><h3 data-i18n="home.overallEarnings.title">Общий доход</h3><p data-i18n="home.overallEarnings.subtitle">Все вознаграждения</p></div>
+    </div>
+    <div class="val pk" id="homeBalanceAmount">$0.00</div>
+    <div class="sub" data-i18n="home.overallEarnings.meta">За всё время участия в проекте</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci b">👥</div>
+      <div class="ct"><h3 data-i18n="home.teamSize.title">Численность команды</h3><p data-i18n="home.teamSize.subtitle">Общая структура</p></div>
+    </div>
+    <div class="val g" id="homeTeamVal">0</div>
+    <div class="sub" id="homeDirectRefsSub">Прямых рефералов: 0</div>
+    <div class="sub" id="homeActiveMktSub">Активных в маркетинге: 0</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci y">👑</div>
+      <div class="ct"><h3 data-i18n="home.level.title">Ваш уровень</h3><p id="homeLevelSubtitle">—</p></div>
+    </div>
+    <div class="val y" id="homeLevelVal">—</div>
+    <div class="sub" id="homeLevelMeta">—</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci pu">📅</div>
+      <div class="ct"><h3 data-i18n="home.inProject.title">В проекте</h3><p data-i18n="home.inProject.subtitle">Дата регистрации</p></div>
+    </div>
+    <div class="val pu" id="homeJoinedAt" style="font-size:20px">—</div>
+    <div class="sub" data-i18n="home.inProject.meta">Дата вступления в команду</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci c">👤</div>
+      <div class="ct"><h3 data-i18n="home.profile.title">Профиль</h3><p data-i18n="home.profile.subtitle">Личная информация</p></div>
+    </div>
+    <div id="homeProfileName" style="color:var(--link);font-size:16px;font-weight:700;margin-top:8px">—</div>
+    <div id="homeProfileUsername" style="color:var(--muted);font-size:13px">—</div>
+    <div id="homeReferrerLine" class="sub" style="margin-top:8px;font-size:12px;color:var(--cyan);display:none"></div>
+  </div>
+  <div class="ref-card">
+    <h3 data-i18n="home.referral.title">Ваша реферальная<br>ссылка</h3>
+    <div class="ref-box" id="refText" data-i18n="home.referral.loading">…</div>
+    <button type="button" class="btn-copy" id="copyBtn" data-i18n="actions.copy">📋 Копировать</button>
+  </div>
+</div>
+
+<div class="page" id="page-finances">
+  <div class="fin-top">
+    <div class="lbl" data-i18n="finances.overallLabel">Общий доход</div>
+    <div class="amount" id="finOverallAmount">$0.00</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:5px" data-i18n="finances.overallSub">За всё время участия</div>
+  </div>
+  <div style="font-size:22px;font-weight:900;margin:0 0 12px;padding:0 2px" data-i18n="finances.title">Финансы</div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci g">🎁</div>
+      <div class="ct"><h3 data-i18n="finances.today">Сегодня</h3></div>
+    </div>
+    <div class="val g" id="finToday">$0.00</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci pu">📅</div>
+      <div class="ct"><h3 data-i18n="finances.thisMonth">Этот месяц</h3></div>
+    </div>
+    <div class="val pu" id="finMonth">$0.00</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci b">📊</div>
+      <div class="ct"><h3 data-i18n="finances.operations">Операций</h3></div>
+    </div>
+    <div class="val" id="finOps" style="color:var(--blue)">0</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="ci o">📈</div>
+      <div class="ct"><h3 data-i18n="finances.average">Средний</h3></div>
+    </div>
+    <div class="val y" id="finAvg">$0.00</div>
+  </div>
+  
+  <div class="filter-card">
+    <h3 data-i18n="finances.filters.title">Фильтры</h3>
+    <div class="f-label" data-i18n="finances.filters.type">Тип операции</div>
+    <select class="f-select" id="finFilterType"><option value="all" data-i18n="finances.filters.typeOptions.all">Все типы</option><option value="referral" data-i18n="finances.filters.typeOptions.referral">Реферальные</option><option value="team" data-i18n="finances.filters.typeOptions.team">Командные</option><option value="bonus" data-i18n="finances.filters.typeOptions.bonuses">Бонусы</option></select>
+    <div class="f-label" data-i18n="finances.filters.status">Статус</div>
+    <select class="f-select" id="finFilterStatus"><option value="all" data-i18n="finances.filters.statusOptions.all">Все статусы</option><option value="completed" data-i18n="finances.filters.statusOptions.completed">Выполнен</option><option value="pending" data-i18n="finances.filters.statusOptions.pending">Ожидание</option><option value="declined" data-i18n="finances.filters.statusOptions.declined">Отклонён</option></select>
+    <div class="f-label" data-i18n="finances.filters.dateFrom">Дата с</div>
+    <input type="date" class="f-input" id="finFilterFrom" placeholder="дд.мм.гггг" data-i18n-placeholder="finances.date.placeholder">
+    <div class="f-label" data-i18n="finances.filters.dateTo">Дата до</div>
+    <input type="date" class="f-input" id="finFilterTo" placeholder="дд.мм.гггг" data-i18n-placeholder="finances.date.placeholder">
+    <div class="f-btns">
+      <button type="button" class="btn-apply" id="finFilterApply" data-i18n="finances.filters.apply">👁 Применить фильтр</button>
+      <button type="button" class="btn-reset" id="finFilterReset" data-i18n="finances.filters.reset">↻ Сбросить</button>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="hist-head">
+      <h3 data-i18n="finances.history.title">История операций</h3>
+      <button type="button" class="btn-export" data-i18n="finances.export">⬇ Экспорт</button>
+    </div>
+    <div class="empty-hist" id="finHistoryEmpty">
+      <div class="ei">🕐</div>
+      <p data-i18n="finances.history.empty">История операций пока пуста</p>
+    </div>
+    <div id="finHistoryList" class="fin-history-list" hidden></div>
+  </div>
+</div>
+
+<div class="page" id="page-partners">
+  <div class="hero" style="padding-bottom:14px">
+    <div class="badge" data-i18n="partners.badge">👥 ПАРТНЁРЫ</div>
+    <h2 style="font-size:26px;font-weight:900;margin:8px 0 0"><span data-i18n="partners.title">Партнёры</span> <span id="partnersRefreshBtn" style="cursor:pointer;font-size:20px" title="Обновить">🔄</span></h2>
+  </div>
+
+  <div class="card" style="margin-bottom:10px">
+    <div class="partners-team-row">
+      <div class="ci pu" style="width:40px;height:40px;font-size:18px">👤</div>
+      <div class="partners-team-text">
+        <div id="partnersTeamTitle" style="font-weight:700;font-size:15px">—</div>
+        <div id="partnersDirectCountLine" style="color:var(--muted);font-size:13px">—</div>
+      </div>
+      <button type="button" class="btn-partners-team" id="btnPartnersTeam" data-i18n="partners.myTeam">🏠 Моя команда</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="card" style="margin:0;text-align:center;padding:16px 10px">
+      <div id="partnersStatDirect" style="font-size:28px;font-weight:900;color:var(--cyan)">0</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="partners.direct">Прямые партнёры</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center;padding:16px 10px">
+      <div id="partnersStatActive" style="font-size:28px;font-weight:900;color:var(--green)">0</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="partners.active">Активные</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center;padding:16px 10px">
+      <div id="partnersStatTeams" style="font-size:28px;font-weight:900;color:var(--purple,#a855f7)">0</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="partners.teams">Команды партнёров</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center;padding:16px 10px">
+      <div id="partnersStatMkt" style="font-size:28px;font-weight:900;color:var(--yellow,#eab308)">0</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px" data-i18n="partners.inMarketing">В маркетинге</div>
+    </div>
+  </div>
+
+  <div class="card card--interactive" id="partnersStructureCard" role="button" tabindex="0" aria-label="Структура">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:17px;font-weight:800" data-i18n="partners.structure">Структура партнёров</div>
+      <span style="font-size:20px" aria-hidden="true">👁</span>
+    </div>
+    <div style="color:var(--muted);font-size:13px;margin-top:6px" data-i18n="partners.structureDesc">Нажмите для просмотра полной структуры</div>
+  </div>
+
+  <div class="ref-card">
+    <h3 data-i18n="home.referral.title">Ваша реферальная<br>ссылка</h3>
+    <div class="ref-box" id="partnersRefBox">—</div>
+    <button type="button" class="btn-copy" data-action="copy-ref" data-i18n="actions.copy">📋 Копировать</button>
+  </div>
+</div>
+
+<div class="page" id="page-structure">
+  <div class="struct-err" id="structurePanelErr">
+    <div class="struct-logo">TOZA YURAK</div>
+    <p data-i18n="structure.error">Ошибка загрузки структуры:<br>Пользователь не участвует в маркетинговой структуре</p>
+    <button type="button" class="btn-refresh" id="structureRefreshBtn" data-i18n="actions.refresh">↻ Обновить</button>
+  </div>
+  <div class="struct-ok-card" id="structurePanelOk" hidden>
+    <div class="struct-logo">TOZA YURAK</div>
+    <p class="struct-ok-text" data-i18n="structure.ok">Вы в маркетинговой структуре. Данные синхронизированы с сервером.</p>
+    <button type="button" class="btn-refresh" id="structureRefreshBtnOk" data-i18n="actions.refresh">↻ Обновить</button>
+  </div>
+</div>
+
+<div class="page" id="page-marketing">
+  <div class="mkt-page">
+    <div class="mkt-screen-title" data-i18n="marketing.title">Маркетинг</div>
+
+    <figure class="mkt-poster-figure">
+      <div
+        class="mkt-poster-card mkt-table mkt-plan-wrap"
+        id="marketingTableTrigger"
+        role="button"
+        tabindex="0"
+        data-i18n-aria="marketing.expandAria"
+      >
+        <img
+          class="mkt-poster"
+          id="marketingPosterImg"
+          src="images/marketing-plan.png"
+          width="1024"
+          height="817"
+          decoding="async"
+          fetchpriority="low"
+          alt="Маркетинговый план «Тоза юракли — Сахий куллар»"
+          data-i18n-alt="marketing.posterAlt"
+        />
+      </div>
+      <figcaption class="mkt-hint" data-i18n="marketing.hint">Нажмите на изображение для увеличения</figcaption>
+    </figure>
+  </div>
+</div>
+
+<div class="page" id="page-tools">
+  <div class="tools-intro">
+    <h3 data-i18n="tools.title">🔧 инструменты в разработке</h3>
+    <p data-i18n="tools.subtitle">Команда активно работает над созданием уникальных инструментов для автоматизации вашего бизнеса. Следите за обновлениями!</p>
+  </div>
+  <div class="tool-card tool-card--open" id="toolCardVisit" data-open-page="bizcard" role="button" tabindex="0">
+    <div class="tool-badge-row">
+      <span class="badge-dev" data-i18n="tools.badgeDev">🔧 В разработке</span>
+      <span class="badge-lvl" data-i18n="tools.badgeLvl1">👑 Ур.1</span>
+    </div>
+    <h3 data-i18n="tools.card.visit.title">Визитка</h3>
+    <p data-i18n="tools.card.visit.desc">Персональная визитка для привлечения клиентов</p>
+    <div class="tool-lock tool-lock--hint" data-i18n="tools.tapOpen">Нажмите, чтобы открыть</div>
+  </div>
+  <div class="tool-card">
+    <div class="tool-badge-row">
+      <span class="badge-dev" data-i18n="tools.badgeDev">🔧 В разработке</span>
+      <span class="badge-lvl" data-i18n="tools.badgeLvl2">👑 Ур.2</span>
+    </div>
+    <h3 data-i18n="tools.card.landing.title">Продающий лендинг</h3>
+    <p data-i18n="tools.card.landing.desc">Продающий лендинг с видео презентацией</p>
+    <div class="tool-lock" data-i18n="tools.lock">🔒 Требуется участие в программе</div>
+  </div>
+  <div class="tool-card">
+    <div class="tool-badge-row">
+      <span class="badge-dev" data-i18n="tools.badgeDev">🔧 В разработке</span>
+      <span class="badge-lvl" data-i18n="tools.badgeLvl3">👑 Ур.3</span>
+    </div>
+    <h3 data-i18n="tools.card.minilanding.title">Мини-лендинг</h3>
+    <p data-i18n="tools.card.minilanding.desc">Компактный лендинг для быстрой конверсии</p>
+    <div class="tool-lock" data-i18n="tools.lock">🔒 Требуется участие в программе</div>
+  </div>
+  <div class="tool-card">
+    <div class="tool-badge-row">
+      <span class="badge-dev" data-i18n="tools.badgeDev">🔧 В разработке</span>
+      <span class="badge-lvl" data-i18n="tools.badgeLvl4">👑 Ур.4</span>
+    </div>
+    <h3 data-i18n="tools.card.bot.title">Телеграм-бот</h3>
+    <p data-i18n="tools.card.bot.desc">Автоматизированный бот для работы с клиентами</p>
+    <div class="tool-lock" data-i18n="tools.lock">🔒 Требуется участие в программе</div>
+  </div>
+</div>
+
+<div class="page" id="page-presentations">
+  <div class="pres-card">
+    <div style="background:var(--card2);border-radius:12px;overflow:hidden;margin-bottom:12px">
+      <div style="background:linear-gradient(135deg,#1a5c30,#2d8c4e);padding:20px;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:8px" data-i18n="presentations.program">ПРОГРАММА</div>
+        <div style="font-size:14px;font-weight:800;line-height:1.4" data-i18n="presentations.programTitle">Теперь у Вас есть<br>высокодоходная программа!</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:8px" data-i18n="presentations.programNote">В программе участвуйте с личного аккаунта телеграм! Установите своё реальное фото/аватар и ник пользователя!</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#155226,#1e7a40);padding:18px;text-align:center">
+        <div style="font-size:13px;line-height:1.5;color:rgba(255,255,255,.85)" data-i18n="presentations.programFooter">Вместе мы преодолеваем любые финансовые трудности!<br><span style="color:rgba(255,255,255,.5);font-size:11px">Всё на благо нашего семейного бюджета!</span></div>
+      </div>
+    </div>
+    <button type="button" class="btn-download" id="btnPresDownload" data-i18n="presentations.download">⬇ Скачать презентацию</button>
+  </div>
+  <div class="pres-card">
+    <h3 data-i18n="presentations.advantages">Преимущества</h3>
+    <div style="background:var(--card2);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--green)" data-i18n="presentations.advantagesSummary">Шесть причин присоединиться:</div>
+      <ul class="advantage-list">
+        <li data-i18n="presentations.advantage1">Всего 10$ за место в бизнесе!</li>
+        <li data-i18n="presentations.advantage2">Мгновенная прибыль!</li>
+        <li data-i18n="presentations.advantage3">Гарантированные выплаты!</li>
+        <li data-i18n="presentations.advantage4">Потенциальный доход до 2 000 000$!</li>
+        <li data-i18n="presentations.advantage5">Без опыта, без квалификации, без навыков!</li>
+        <li data-i18n="presentations.advantage6">Зарабатывайте как активно, так и пассивно после построения команды 3-9-27!</li>
+      </ul>
+    </div>
+    <div class="mkt-hint" data-i18n="presentations.hint">Нажмите для увеличения</div>
+  </div>
+  <div class="pres-card">
+    <h3 data-i18n="presentations.materials">Материалы для партнёров</h3>
+    <div class="materials-grid">
+      <div class="mat-item"><div class="mat-icon">📋</div><div class="mat-label" data-i18n="presentations.material1">Инструкция для новичков</div></div>
+      <div class="mat-item"><div class="mat-icon">📈</div><div class="mat-label" data-i18n="presentations.material2">Маркетинг план</div></div>
+      <div class="mat-item"><div class="mat-icon">🎯</div><div class="mat-label" data-i18n="presentations.material3">Скрипты продаж</div></div>
+      <div class="mat-item"><div class="mat-icon">🎓</div><div class="mat-label" data-i18n="presentations.material4">Обучение</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-documents">
+  <div class="doc-card">
+    <h2 data-i18n="documents.title">Документы</h2>
+    <div class="doc-item">
+      <span class="doc-icon" style="color:var(--cyan)">📄</span>
+      <h4 data-i18n="documents.agreement.title">Соглашение</h4>
+      <p data-i18n="documents.agreement.desc">Пользовательское соглашение</p>
+      <button type="button" class="btn-open" id="docBtnAgreement" data-i18n="documents.open">↗ Открыть документ</button>
+    </div>
+    <div class="doc-item">
+      <span class="doc-icon" style="color:var(--blue)">📋</span>
+      <h4 data-i18n="documents.ethics.title">Этика и правила</h4>
+      <p data-i18n="documents.ethics.desc">Правила поведения в сообществе</p>
+      <button type="button" class="btn-open" id="docBtnEthics" data-i18n="documents.open">↗ Открыть документ</button>
+    </div>
+  </div>
+  <div class="important-card">
+    <h3 data-i18n="documents.important.title">Важная информация</h3>
+    <div class="imp-item">
+      <h4><span class="imp-dot"></span><span data-i18n="documents.important.point1">Прозрачность операций</span></h4>
+      <p data-i18n="documents.important.point1desc">Все транзакции проходят напрямую между участниками</p>
+    </div>
+    <div class="imp-item">
+      <h4><span class="imp-dot"></span><span data-i18n="documents.important.point2">Соблюдение правил</span></h4>
+      <p data-i18n="documents.important.point2desc">Обязательно ознакомьтесь с этикой и правилами</p>
+    </div>
+    <div class="imp-item">
+      <h4><span class="imp-dot"></span><span data-i18n="documents.important.point3">Поддержка</span></h4>
+      <p data-i18n="documents.important.point3desc">При вопросах обращайтесь к администрации</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-groups">
+  <div class="group-card">
+    <h2 data-i18n="groups.title">Группы и каналы</h2>
+    <div class="g-item g-item--link" data-app-link="channel" role="button" tabindex="0">
+      <div class="g-avatar" style="background:rgba(76,175,80,.2)">📢</div>
+      <div class="g-info"><h4 data-i18n="groups.channel.title">Официальный канал</h4><p data-i18n="groups.channel.desc">Новости и обновления</p></div>
+      <div class="g-arrow">›</div>
+    </div>
+    <div class="g-item g-item--link" data-app-link="chat" role="button" tabindex="0">
+      <div class="g-avatar" style="background:rgba(91,155,213,.2)">💬</div>
+      <div class="g-info"><h4 data-i18n="groups.chat.title">Общий чат</h4><p data-i18n="groups.chat.desc">Общение участников</p></div>
+      <div class="g-arrow">›</div>
+    </div>
+    <div class="g-item g-item--link" data-app-link="training" role="button" tabindex="0">
+      <div class="g-avatar" style="background:rgba(155,89,182,.2)">🎓</div>
+      <div class="g-info"><h4 data-i18n="groups.training.title">Обучение</h4><p data-i18n="groups.training.desc">Учебные материалы</p></div>
+      <div class="g-arrow">›</div>
+    </div>
+    <div class="g-item g-item--link" data-app-link="topPartners" role="button" tabindex="0">
+      <div class="g-avatar" style="background:rgba(230,126,34,.2)">🏆</div>
+      <div class="g-info"><h4 data-i18n="groups.top.title">ТОП партнёры</h4><p data-i18n="groups.top.desc">Лидеры команды</p></div>
+      <div class="g-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-receipt">
+  <header class="receipt-hero">
+    <h2 class="receipt-hero__title" data-i18n="receipt.title">Генератор чеков</h2>
+    <div class="receipt-badge" role="status">
+      <span class="receipt-badge__ico" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+      </span>
+      <span data-i18n="receipt.badge.telegram">Автоотправка в Telegram</span>
+    </div>
+  </header>
+
+  <section class="receipt-panel receipt-panel--howto" aria-labelledby="receiptHowtoHeading">
+    <div class="receipt-panel__head">
+      <span class="receipt-panel__head-ico" aria-hidden="true">📋</span>
+      <h3 class="receipt-panel__title" id="receiptHowtoHeading" data-i18n="receipt.howto.title">Как это работает</h3>
+    </div>
+    <ul class="receipt-howto-list">
+      <li data-i18n="receipt.howto.step1">Заполните форму или используйте быструю генерацию</li>
+      <li data-i18n="receipt.howto.step2">Чек автоматически сгенерируется</li>
+      <li data-i18n="receipt.howto.step3">Вы получите его в Telegram-боте</li>
+      <li data-i18n="receipt.howto.step4">Также сможете скачать или поделиться им здесь</li>
+    </ul>
+  </section>
+
+  <section class="receipt-panel receipt-panel--form" aria-labelledby="receiptCreateHeading">
+    <h3 class="receipt-form-title" id="receiptCreateHeading" data-i18n="receipt.create.title">Создать чек</h3>
+    <div class="r-form-group">
+      <label for="receiptIdInput" data-i18n="receipt.field.id">ID (необязательно)</label>
+      <input class="r-input" id="receiptIdInput" type="text" maxlength="120" autocomplete="off" data-i18n-placeholder="receipt.field.idPlaceholder" placeholder="Оставьте пустым для «CONCORD»">
+      <div class="r-hint" data-i18n="receipt.field.idHint">Будет отображаться как «ID: ваш текст»</div>
+    </div>
+    <div class="r-form-group">
+      <label for="receiptAmountInput" data-i18n="receipt.amount">Сумма</label>
+      <input class="r-input" id="receiptAmountInput" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-i18n-placeholder="receipt.amountPlaceholder" autocomplete="transaction-amount">
+    </div>
+    <div class="r-form-group">
+      <label for="receiptRecipientInput" data-i18n="receipt.recipient">Получатель</label>
+      <input class="r-input" id="receiptRecipientInput" type="text" placeholder="Имя получателя" data-i18n-placeholder="receipt.recipientPlaceholder" autocomplete="name">
+    </div>
+    <div class="r-form-group">
+      <label for="receiptDescriptionInput" data-i18n="receipt.description">Описание</label>
+      <textarea class="r-textarea" id="receiptDescriptionInput" data-i18n-placeholder="receipt.descriptionPlaceholder" placeholder="Описание платежа..."></textarea>
+    </div>
+    <div class="r-form-group">
+      <label for="receiptImageInput" data-i18n="receipt.imageLabel">Изображение (макс. 5МБ, JPG/PNG/GIF)</label>
+      <input class="r-input r-input-file" id="receiptImageInput" type="file" accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp">
+      <div class="r-hint" data-i18n="receipt.imageHint">Максимальный размер: 5МБ. Форматы: JPG, PNG, GIF</div>
+    </div>
+    <button type="button" class="btn-generate" id="generateReceiptBtn" data-i18n="receipt.generate">✦ Сгенерировать и отправить</button>
+  </section>
+
+  <section class="receipt-panel receipt-panel--quick" aria-labelledby="receiptQuickHeading">
+    <h3 class="receipt-panel__title receipt-panel__title--plain" id="receiptQuickHeading" data-i18n="receipt.quick.title">Быстрая генерация</h3>
+    <button type="button" class="qg-btn" id="quickGenerateBtn">
+      <span class="qg-ico" aria-hidden="true">⚡</span>
+      <div class="qg-text">
+        <div class="qg-title" data-i18n="receipt.quick.line1">Чек с текущим балансом</div>
+        <div class="qg-desc" data-i18n="receipt.quick.line2">Подставит сумму из «Общий доход» и ваше имя</div>
+      </div>
+    </button>
+  </section>
+
+  <section class="receipt-panel receipt-panel--result" aria-labelledby="receiptResultHeading">
+    <h3 class="receipt-panel__title receipt-panel__title--plain" id="receiptResultHeading" data-i18n="receipt.result.title">Результат</h3>
+    <div id="receiptResultRoot">
+      <div class="receipt-empty" id="receiptResultEmpty">
+        <div class="receipt-empty__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h4"/></svg>
+        </div>
+        <p class="receipt-empty__lead" data-i18n="receipt.result.emptyLead">Заполните форму и нажмите кнопку генерации</p>
+        <p class="receipt-empty__tg" data-i18n="receipt.result.emptyTelegram">Чек будет автоматически отправлен вам в Telegram</p>
+      </div>
+      <div id="receiptResultBody" class="receipt-result-body" hidden></div>
+    </div>
+  </section>
+
+  <section class="receipt-panel receipt-panel--examples" aria-labelledby="receiptExamplesHeading">
+    <h3 class="receipt-panel__title receipt-panel__title--plain" id="receiptExamplesHeading" data-i18n="receipt.examples.title">Примеры использования</h3>
+    <div class="receipt-example-grid">
+      <article class="receipt-example receipt-example--partners">
+        <h4 class="receipt-example__title" data-i18n="receipt.examples.partners.title">Для партнеров</h4>
+        <p class="receipt-example__desc" data-i18n="receipt.examples.partners.desc">Делитесь чеками с достижениями для мотивации команды</p>
+      </article>
+      <article class="receipt-example receipt-example--social">
+        <h4 class="receipt-example__title" data-i18n="receipt.examples.social.title">В социальных сетях</h4>
+        <p class="receipt-example__desc" data-i18n="receipt.examples.social.desc">Публикуйте успехи для привлечения новых партнеров</p>
+      </article>
+      <article class="receipt-example receipt-example--archive">
+        <h4 class="receipt-example__title" data-i18n="receipt.examples.archive.title">Личный архив</h4>
+        <p class="receipt-example__desc" data-i18n="receipt.examples.archive.desc">Сохраняйте чеки как подтверждение результатов</p>
+      </article>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-bizcard">
+  <div class="bc-editor">
+    <div class="bc-editor-toolbar">
+      <h2 class="bc-editor-title" data-i18n="bizcard.title">Моя визитка</h2>
+      <button type="button" class="bc-tool-btn" id="bcPreviewOpenBtn">
+        <span class="bc-tool-ico" aria-hidden="true">👁</span>
+        <span data-i18n="bizcard.preview">Предпросмотр</span>
+      </button>
+    </div>
+    <div class="bc-tabs-scroll">
+      <div class="bc-tabs" role="tablist" aria-label="Визитка">
+        <button type="button" class="bc-tab active" role="tab" aria-selected="true" data-bc-tab="basic" data-i18n="bizcard.tab.basic">Основное</button>
+        <button type="button" class="bc-tab" role="tab" aria-selected="false" data-bc-tab="about" data-i18n="bizcard.tab.about">О себе</button>
+        <button type="button" class="bc-tab" role="tab" aria-selected="false" data-bc-tab="messengers" data-i18n="bizcard.tab.messengers">Мессенджеры</button>
+        <button type="button" class="bc-tab" role="tab" aria-selected="false" data-bc-tab="social" data-i18n="bizcard.tab.social">Соцсети</button>
+        <button type="button" class="bc-tab" role="tab" aria-selected="false" data-bc-tab="media" data-i18n="bizcard.tab.media">Медиа</button>
+        <button type="button" class="bc-tab" role="tab" aria-selected="false" data-bc-tab="design" data-i18n="bizcard.tab.design">Оформление</button>
+      </div>
+    </div>
+    <div class="bc-tab-progress" aria-hidden="true"><span id="bcTabProgress"></span></div>
+
+    <div class="bc-panel-stack">
+      <section class="bc-panel is-active" id="bcPanel-basic" data-panel="basic" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.personal">Личные данные</div>
+        <div class="r-form-group">
+          <label for="bcCardTitle" data-i18n="bizcard.field.cardTitle">Название визитки</label>
+          <input class="r-input" id="bcCardTitle" type="text" maxlength="120" autocomplete="off" data-i18n-placeholder="bizcard.ph.cardTitle" placeholder="Моя основная визитка">
+          <div class="r-hint" data-i18n="bizcard.field.cardTitleHint">Для удобства в списке</div>
+        </div>
+        <div class="r-form-group">
+          <label for="bcFullName" data-i18n="bizcard.field.fullName">ФИО *</label>
+          <input class="r-input" id="bcFullName" type="text" maxlength="200" autocomplete="name" data-i18n-placeholder="bizcard.ph.fullName" placeholder="Иванов Иван">
+        </div>
+        <div class="r-form-group">
+          <label for="bcPosition" data-i18n="bizcard.field.position">Должность</label>
+          <input class="r-input" id="bcPosition" type="text" maxlength="200" data-i18n-placeholder="bizcard.ph.position" placeholder="Независимый партнёр">
+        </div>
+        <div class="r-form-group">
+          <label for="bcPhone" data-i18n="bizcard.field.phone">Телефон</label>
+          <input class="r-input" id="bcPhone" type="tel" inputmode="tel" maxlength="40" autocomplete="tel" placeholder="+998 90 123 45 67">
+        </div>
+      </section>
+
+      <section class="bc-panel" id="bcPanel-about" data-panel="about" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.about">О себе и слоган</div>
+        <div class="r-form-group">
+          <label for="bcSlogan" data-i18n="bizcard.field.slogan">Слоган (отображается на 1 слайде)</label>
+          <textarea class="r-textarea bc-textarea-lg" id="bcSlogan" maxlength="200" rows="3" data-i18n-placeholder="bizcard.ph.slogan" placeholder="Ваш мотивирующий слоган в 2 строки"></textarea>
+          <div class="bc-char-count"><span id="bcSloganCount">0</span>/200</div>
+        </div>
+        <div class="r-form-group">
+          <label for="bcAbout" data-i18n="bizcard.field.about">Описание о себе (отображается на 2 слайде)</label>
+          <textarea class="r-textarea bc-textarea-xl" id="bcAbout" maxlength="1000" rows="6" data-i18n-placeholder="bizcard.ph.about" placeholder="Расскажите о себе..."></textarea>
+          <div class="bc-char-count"><span id="bcAboutCount">0</span>/1000</div>
+        </div>
+        <div class="r-form-group">
+          <label for="bcRegText" data-i18n="bizcard.field.regText">Текст для регистрации</label>
+          <textarea class="r-textarea" id="bcRegText" maxlength="500" rows="3" data-i18n-placeholder="bizcard.ph.regText" placeholder="Слоган для регистрации"></textarea>
+        </div>
+      </section>
+
+      <section class="bc-panel" id="bcPanel-messengers" data-panel="messengers" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.messengers">Мессенджеры</div>
+        <div class="r-form-group">
+          <label for="bcTg"><span class="bc-ico-label" aria-hidden="true">✈</span> Telegram</label>
+          <input class="r-input" id="bcTg" type="text" maxlength="64" placeholder="@username" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcWa"><span class="bc-ico-label" aria-hidden="true">💬</span> WhatsApp</label>
+          <input class="r-input" id="bcWa" type="tel" inputmode="tel" maxlength="32" placeholder="+998 90 123 45 67" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcViber"><span class="bc-ico-label" aria-hidden="true">📞</span> Viber</label>
+          <input class="r-input" id="bcViber" type="tel" inputmode="tel" maxlength="32" placeholder="+998 90 123 45 67" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcImo"><span class="bc-ico-label" aria-hidden="true">ⓘ</span> imo</label>
+          <input class="r-input" id="bcImo" type="tel" inputmode="tel" maxlength="32" placeholder="+998 90 123 45 67" autocomplete="off">
+        </div>
+      </section>
+
+      <section class="bc-panel" id="bcPanel-social" data-panel="social" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.social">Социальные сети</div>
+        <div class="r-form-group">
+          <label for="bcVk">ВКонтакте</label>
+          <input class="r-input" id="bcVk" type="url" maxlength="500" placeholder="https://vk.com/username" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcInsta">Instagram</label>
+          <input class="r-input" id="bcInsta" type="text" maxlength="200" placeholder="@username" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcYt">YouTube</label>
+          <input class="r-input" id="bcYt" type="url" maxlength="500" placeholder="https://youtube.com/@channel" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcFb">Facebook</label>
+          <input class="r-input" id="bcFb" type="url" maxlength="500" placeholder="https://facebook.com/username" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcRutube">Rutube</label>
+          <input class="r-input" id="bcRutube" type="url" maxlength="500" placeholder="https://rutube.ru/channel/..." autocomplete="off">
+        </div>
+      </section>
+
+      <section class="bc-panel" id="bcPanel-media" data-panel="media" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.mediaPhoto">Фото и фон</div>
+        <div class="r-form-group">
+          <label for="bcPhotoUrl" data-i18n="bizcard.media.photoUrl">URL фотографии</label>
+          <input class="r-input" id="bcPhotoUrl" type="url" maxlength="2000" placeholder="https://example.com/photo.jpg" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcBgUrl" data-i18n="bizcard.media.bgUrl">URL фона</label>
+          <input class="r-input" id="bcBgUrl" type="url" maxlength="2000" placeholder="https://example.com/background.jpg" autocomplete="off">
+        </div>
+        <div class="r-form-group">
+          <label for="bcMusicUrl" data-i18n="bizcard.media.musicUrl">URL музыки (MP3)</label>
+          <input class="r-input" id="bcMusicUrl" type="url" maxlength="2000" placeholder="https://example.com/music.mp3" autocomplete="off">
+          <div class="r-hint" data-i18n="bizcard.media.musicHint">Будет отображаться индикатор музыки</div>
+        </div>
+        <div class="bc-gallery-block">
+          <div class="bc-gallery-head">
+            <span data-i18n="bizcard.media.gallery">Галерея фото</span>
+            <span class="bc-count" id="bcGalleryCount">(0/10)</span>
+          </div>
+          <div id="bcGalleryList" class="bc-url-list"></div>
+          <button type="button" class="bc-add-dashed" id="bcGalleryAdd" data-i18n="bizcard.media.addPhoto">+ Добавить фото</button>
+        </div>
+        <div class="bc-gallery-block">
+          <div class="bc-gallery-head">
+            <span data-i18n="bizcard.media.videos">Видео ссылки</span>
+            <span class="bc-count" id="bcVideoCount">(0/5)</span>
+          </div>
+          <div id="bcVideoList" class="bc-url-list"></div>
+          <button type="button" class="bc-add-dashed" id="bcVideoAdd" data-i18n="bizcard.media.addVideo">+ Добавить видео</button>
+        </div>
+      </section>
+
+      <section class="bc-panel" id="bcPanel-design" data-panel="design" role="tabpanel">
+        <div class="bc-section-title" data-i18n="bizcard.section.design">Оформление</div>
+        <div class="r-form-group">
+          <span class="bc-design-label" data-i18n="bizcard.design.theme">Тема</span>
+          <div class="bc-theme-grid" role="group" aria-label="Тема визитки">
+            <button type="button" class="bc-theme-btn active" data-bc-theme="light" data-i18n="bizcard.theme.light">Светлая</button>
+            <button type="button" class="bc-theme-btn" data-bc-theme="dark" data-i18n="bizcard.theme.dark">Тёмная</button>
+            <button type="button" class="bc-theme-btn" data-bc-theme="gradient" data-i18n="bizcard.theme.gradient">Градиент</button>
+            <button type="button" class="bc-theme-btn" data-bc-theme="corporate" data-i18n="bizcard.theme.corporate">Корпоративная</button>
+          </div>
+        </div>
+        <div class="r-form-group">
+          <label for="bcPrimaryColor" data-i18n="bizcard.design.primaryColor">Основной цвет</label>
+          <div class="bc-color-row">
+            <input type="color" id="bcColorPicker" value="#5ff0b0" aria-label="Цвет">
+            <input class="r-input" id="bcPrimaryColor" type="text" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$" placeholder="#5ff0b0" autocomplete="off">
+          </div>
+          <div class="bc-color-presets" id="bcColorPresets" aria-hidden="true"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="bc-editor-actions">
+      <button type="button" class="btn-generate" id="bizcardSaveBtn">
+        <span aria-hidden="true">💾</span>
+        <span data-i18n="bizcard.save">Сохранить визитку</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="bcard-wrap">
+    <h2 class="bc-live-heading" data-i18n="bizcard.livePreview">Текущая визитка</h2>
+    <div class="bcard" id="bcardLive">
+      <div class="bc-avatar-wrap">
+        <div class="bc-photo-placeholder" id="bcLivePhotoPh" aria-hidden="true">TY</div>
+        <img class="bc-photo" id="bcLivePhoto" alt="" hidden decoding="async">
+      </div>
+      <div class="bc-logo">TOZA YURAK</div>
+      <div class="bc-name" id="bcName">—</div>
+      <div class="bc-position" id="bcPositionLine"></div>
+      <div class="bc-username" id="bcUsername">—</div>
+      <div class="bc-slogan" id="bcSloganLine"></div>
+      <div class="bc-phone" id="bcPhoneLine"></div>
+      <div class="bc-stats">
+        <div class="bc-stat bc-stat--income"><div class="bs-val" id="bcIncomeVal">$0</div><div class="bs-lbl" data-i18n="bizcard.income">Доход</div></div>
+        <div class="bc-stat"><div class="bs-val" id="bcTeamVal">0</div><div class="bs-lbl" data-i18n="bizcard.team">Команда</div></div>
+        <div class="bc-stat"><div class="bs-val" id="bcLevelVal">—</div><div class="bs-lbl" data-i18n="bizcard.level">Уровень</div></div>
+      </div>
+      <div class="bc-links" id="bcLinksRow" aria-label="Контакты"></div>
+      <div class="bc-ref"><span class="bc-ref__label" data-i18n="bizcard.ref">Ссылка: </span><span class="bc-ref__url" id="bcRefSpan">—</span></div>
+    </div>
+    <button type="button" class="btn-share" id="shareBizBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+      <span data-i18n="bizcard.share">Поделиться визиткой</span>
+    </button>
+  </div>
+</div>
+
+<div class="page" id="page-settings">
+  <div class="settings-card">
+    <h2 data-i18n="settings.title">Настройки</h2>
+    <div class="set-item" id="changeAccountBtn">
+      <div class="set-icon" style="background:rgba(233,30,140,.15)">🔄</div>
+      <div class="set-info"><h4 data-i18n="settings.changeAccount">Сменить аккаунт</h4><p data-i18n="settings.changeAccountSub">Выйти и войти под другим пользователем</p></div>
+      <div class="set-arrow">›</div>
+    </div>
+    <div class="set-item">
+      <div class="set-icon" style="background:rgba(91,155,213,.2)">🌐</div>
+      <div class="set-info">
+        <h4 data-i18n="settings.language">Язык</h4>
+        <select id="languageSelect" class="lang-select" aria-label="Language selector">
+          <option value="ru" data-i18n="language.name.ru">Русский</option>
+          <option value="uz" data-i18n="language.name.uz">O'zbekcha</option>
+          <option value="uz-cyrl" data-i18n="language.name.uz-cyrl">Ўзбекча</option>
+        </select>
+      </div>
+      <div class="set-arrow">›</div>
+    </div>
+    <div class="set-item set-item--toggle" id="notifRow" role="button" tabindex="0" aria-pressed="true">
+      <div class="set-icon" style="background:rgba(155,89,182,.2)">🔔</div>
+      <div class="set-info"><h4 data-i18n="settings.notifications">Уведомления</h4><p id="notifSub">Включены</p></div>
+      <div class="set-arrow">›</div>
+    </div>
+    <div class="set-item" id="aboutRow" role="button" tabindex="0">
+      <div class="set-icon" style="background:rgba(76,175,80,.2)">ℹ️</div>
+      <div class="set-info"><h4 data-i18n="settings.about">О программе</h4><p data-i18n="settings.version">Версия 1.0.0</p></div>
+      <div class="set-arrow">›</div>
+    </div>
+  </div>
+  <div class="profile-card">
+    <div style="display:flex;align-items:center;gap:14px;width:100%">
+      <div class="profile-ava profile-ava--letter" aria-hidden="true"><span id="settingsProfileAva">…</span></div>
+      <div class="profile-info">
+        <div class="profile-name" id="settingsProfileName">—</div>
+        <div class="profile-username" id="settingsProfileUsername">—</div>
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div class="ps-item"><div class="ps-val" id="settingsPsIncome">$0</div><div class="ps-label" data-i18n="smuser.income">Доход</div></div>
+      <div class="ps-item"><div class="ps-val" id="settingsPsTeam">0</div><div class="ps-label" data-i18n="smuser.team">Команда</div></div>
+    </div>
+  </div>
+</div>
+
+<nav class="bnav" id="mainNav" aria-label="Основная навигация">
+  <div class="ni active" id="ni-home" data-page="home" aria-current="page" tabindex="0">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span data-i18n="nav.home">Главная</span>
+  </div>
+  <div class="ni" id="ni-finances" data-page="finances" tabindex="0">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+    <span data-i18n="nav.finances">Финансы</span>
+  </div>
+  <div class="ni" id="ni-partners" data-page="partners" tabindex="0">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    <span data-i18n="nav.partners">Партнёры</span>
+  </div>
+  <div class="ni" id="ni-structure" data-page="structure" tabindex="0">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+    <span data-i18n="nav.structure">Структура</span>
+  </div>
+  <div class="ni" id="ni-marketing" data-page="marketing" tabindex="0">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+    <span data-i18n="nav.marketing">Маркетинг</span>
+  </div>
+</nav>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="smenu" id="smenu">
+  <div class="sm-head">
+    <img id="smLogoImg" style="width:34px;height:34px;border-radius:50%;object-fit:cover" src="photo_2026-05-05_01-08-10 (3).jpg" alt="Toza Yurak logo">
+    <span class="sm-head-title">Toza Yurak Sahiy Qollar</span>
+  </div>
+  <div class="app-accent-strip app-accent-strip--menu" aria-hidden="true"></div>
+  <div class="sm-items">
+    <div class="smi active" data-page="home"><div class="smi-icon">🏠</div><span data-i18n="nav.home">Главная</span></div>
+    <div class="smi" data-page="finances"><div class="smi-icon">$</div><span data-i18n="nav.finances">Финансы</span></div>
+    <div class="smi" data-page="partners"><div class="smi-icon">👥</div><span data-i18n="nav.partners">Партнёры</span></div>
+    <div class="smi" data-page="structure"><div class="smi-icon">📊</div><span data-i18n="nav.structure">Структура</span></div>
+    <div class="smi" data-page="marketing"><div class="smi-icon">📈</div><span data-i18n="nav.marketing">Маркетинг</span></div>
+    <div class="smi" data-page="tools"><div class="smi-icon">🔧</div><span data-i18n="nav.tools">Наши Инструменты</span><span class="smi-badge">🔥</span></div>
+    <div class="smi" data-page="presentations"><div class="smi-icon">📋</div><span data-i18n="nav.presentations">Презентации</span></div>
+    <div class="smi" data-page="documents"><div class="smi-icon">📄</div><span data-i18n="nav.documents">Документы</span></div>
+    <div class="smi" data-page="groups"><div class="smi-icon">💬</div><span data-i18n="nav.groups">Группы и каналы</span></div>
+    <div class="smi" data-page="receipt"><div class="smi-icon">🧾</div><span data-i18n="nav.receipt">Генератор чеков</span></div>
+    <div class="smi" data-page="bizcard"><div class="smi-icon">💳</div><span data-i18n="nav.bizcard">Моя визитка</span></div>
+  </div>
+  <div class="sm-user">
+    <div class="sm-user-top">
+      <div class="sm-user-ava sm-user-ava--letter" aria-hidden="true"><span id="smUserAva">…</span></div>
+      <div class="sm-user-info">
+        <h4 id="smUserName">—</h4>
+        <p id="smUserHandle">—</p>
+      </div>
+    </div>
+    <div class="sm-user-stats">
+      <div class="sm-stat income">
+        <div class="sv" id="smIncomeVal">$0</div>
+        <div class="sl" data-i18n="smuser.income">Доход</div>
+      </div>
+      <div class="sm-stat team">
+        <div class="sv" id="smTeamVal">0</div>
+        <div class="sl" data-i18n="smuser.team">Команда</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:10px 16px;font-size:12px;color:var(--muted);text-align:center">@toza_yurakli_saxiy_qollar_bot</div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 data-i18n="modal.title">Toza Yurak Sahiy Qollar</h3>
+    <p data-i18n="modal.logoutConfirm">Вы уверены, что хотите выйти из аккаунта? Потребуется повторная авторизация.</p>
+    <div class="modal-btns">
+      <button type="button" class="mbtn cancel" id="modalCancelBtn" data-i18n="actions.cancel">Cancel</button>
+      <button type="button" class="mbtn ok" id="modalOkBtn" data-i18n="actions.ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="img-modal" id="imgModal" role="dialog" aria-modal="true" data-i18n-aria="marketing.modalAria">
+  <div class="img-modal__inner mkt-modal-inner">
+    <img
+      class="mkt-modal-img"
+      id="marketingModalImg"
+      src="images/marketing-plan.png"
+      width="1024"
+      height="817"
+      decoding="async"
+      alt=""
+      data-i18n-alt="marketing.posterAlt"
+    />
+    <p class="mkt-modal-hint" data-i18n="marketing.modalHint">Нажмите вне изображения, чтобы закрыть</p>
+  </div>
+</div>
+
+<div class="bc-preview-modal" id="bcPreviewModal" role="dialog" aria-modal="true" aria-labelledby="bcPreviewTitle" hidden>
+  <div class="bc-preview-modal__backdrop" id="bcPreviewBackdrop"></div>
+  <div class="bc-preview-modal__sheet">
+    <div class="bc-preview-modal__head">
+      <h3 id="bcPreviewTitle" data-i18n="bizcard.previewTitle">Предпросмотр визитки</h3>
+      <button type="button" class="bc-preview-close" id="bcPreviewCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="bc-preview-modal__body">
+      <div class="bcard bcard--preview" id="bcardPreview">
+        <div class="bc-avatar-wrap">
+          <div class="bc-photo-placeholder" id="bcPreviewPhotoPh" aria-hidden="true">TY</div>
+          <img class="bc-photo" id="bcPreviewPhoto" alt="" hidden decoding="async">
+        </div>
+        <div class="bc-logo">TOZA YURAK</div>
+        <div class="bc-name" id="bcPreviewName">—</div>
+        <div class="bc-position" id="bcPreviewPosition"></div>
+        <div class="bc-username" id="bcPreviewUsername">—</div>
+        <div class="bc-slogan" id="bcPreviewSlogan"></div>
+        <div class="bc-phone" id="bcPreviewPhone"></div>
+        <div class="bc-stats">
+          <div class="bc-stat bc-stat--income"><div class="bs-val" id="bcPreviewIncome">$0</div><div class="bs-lbl" data-i18n="bizcard.income">Доход</div></div>
+          <div class="bc-stat"><div class="bs-val" id="bcPreviewTeam">0</div><div class="bs-lbl" data-i18n="bizcard.team">Команда</div></div>
+          <div class="bc-stat"><div class="bs-val" id="bcPreviewLevel">—</div><div class="bs-lbl" data-i18n="bizcard.level">Уровень</div></div>
+        </div>
+        <div class="bc-links" id="bcPreviewLinks"></div>
+        <div class="bc-ref"><span class="bc-ref__label" data-i18n="bizcard.ref">Ссылка: </span><span class="bc-ref__url" id="bcPreviewRef">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!--
+  BACKEND API (Node/Express, papka: server/)
+  Standart: npm start → http://127.0.0.1:3847
+  Boshqa serverda API bo‘lsa: ty-api-relative=no va <meta name="ty-api-base" content="https://api...">
+  Brauzer konsoli: window.__BACKEND_API__
+-->
+<script>
+(function () {
+  function trimApiBase(s) {
+    if (s == null || typeof s !== "string") return "";
+    return s.replace(/\/$/, "").trim();
+  }
+  var o = typeof location !== "undefined" && location.origin ? location.origin : "";
+  var originOk = o && o !== "null" && /^https?:/i.test(o);
+  var metaEl = document.querySelector('meta[name="ty-api-base"]');
+  var metaBase = trimApiBase(metaEl ? metaEl.getAttribute("content") : "");
+  var hostname = typeof location !== "undefined" && location.hostname ? String(location.hostname) : "";
+  var isPublicHost =
+    hostname && !/^127\.0\.0\.1$/i.test(hostname) && !/^localhost$/i.test(hostname);
+  if (isPublicHost && metaBase && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(metaBase)) {
+    metaBase = "";
+  }
+  var preset = trimApiBase(typeof window.__API_BASE__ === "string" ? window.__API_BASE__ : "");
+  if (isPublicHost && preset && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(preset)) {
+    preset = "";
+  }
+  var relEl = document.querySelector('meta[name="ty-api-relative"]');
+  var relRaw = (relEl && relEl.getAttribute("content")) || "";
+  var relTrim = String(relRaw).trim().toLowerCase();
+  var relWant = relTrim === "" ? true : /^(1|yes|true|on)$/.test(relTrim);
+  var explicitApi = Boolean(preset || metaBase);
+  var useRelativeAuto = !explicitApi && relWant && originOk;
+  var useRelative;
+  if (typeof window.__API_RELATIVE__ === "boolean") {
+    useRelative = explicitApi ? false : window.__API_RELATIVE__;
+  } else {
+    useRelative = useRelativeAuto;
+    window.__API_RELATIVE__ = useRelative;
+  }
+  var base;
+  if (preset) {
+    base = preset;
+  } else if (metaBase) {
+    base = metaBase;
+  } else if (originOk) {
+    base = trimApiBase(o);
+  } else {
+    base = "http://127.0.0.1:3847";
+  }
+  if (useRelative) {
+    window.__API_BASE__ = "";
+    window.__RECEIPT_API__ = originOk ? trimApiBase(o) + "/api/receipts" : "http://127.0.0.1:3847/api/receipts";
+  } else {
+    window.__API_BASE__ = base;
+    window.__RECEIPT_API__ = base + "/api/receipts";
+  }
+  var abs = function (path) {
+    return (useRelative ? trimApiBase(o) : base) + path;
+  };
+  var fbEl = document.querySelector('meta[name="ty-api-fallback"]');
+  var fbRaw = trimApiBase(fbEl ? fbEl.getAttribute("content") : "");
+  window.__BACKEND_API__ = {
+    base: useRelative ? trimApiBase(o) : base,
+    relative: useRelative,
+    health: abs("/api/health"),
+    authTelegram: abs("/api/auth/telegram"),
+    authBootstrap: abs("/api/auth/bootstrap"),
+    dashboard: abs("/api/dashboard"),
+    transactions: abs("/api/transactions"),
+    receipts: abs("/api/receipts"),
+    fallback: fbRaw || null
+  };
+  window.__APP_LINKS__ = Object.assign(
+    {
+      referralBot: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      channel: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      chat: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      training: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      topPartners: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      agreement: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      ethics: "https://t.me/toza_yurakli_saxiy_qollar_bot",
+      presentationFile: "",
+      marketingImage: "images/marketing-plan.png"
+    },
+    typeof window.__APP_LINKS__ === "object" && window.__APP_LINKS__ ? window.__APP_LINKS__ : {}
+  );
+})();
+</script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

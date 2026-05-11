@@ -1,0 +1,11 @@
+{
+  "name": "toza-yurak-webapp",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "backup-db": "node server/scripts/db-backup.js",
+    "netlify:prep": "node scripts/netlify-prep.js",
+    "netlify:build": "node scripts/netlify-prep.js && node scripts/write-api-config.js"
+  }
+}

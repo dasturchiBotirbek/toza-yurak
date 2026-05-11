@@ -1,0 +1,11 @@
+node_modules
+server/node_modules
+server/data
+server/.env
+.git
+.cursor
+**/.DS_Store
+Thumbs.db
+*.log
+api-config.json
+_redirects

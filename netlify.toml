@@ -1,0 +1,9 @@
+# Statik sayt + /api proksi (TY_BACKEND_URL). api-config.json — zaxira API manzili.
+# Env: TY_BACKEND_URL=https://api.siz.uz  (oxirida / yo'q)
+# BotFather Web App URL: https://siz.netlify.app/ yoki o'z domeningiz
+[build]
+  command = "npm run netlify:build"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"

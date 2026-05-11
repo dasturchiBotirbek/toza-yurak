@@ -1,0 +1,12 @@
+{
+  "id": "7cc26d053f94a4342503c112a745b2e3",
+  "createdAt": "2026-05-08T21:33:28.404Z",
+  "amount": 10.5,
+  "recipient": "Test",
+  "description": "",
+  "from": "User",
+  "dateStr": "01.01.2026",
+  "hasAttachment": false,
+  "plainText": "test",
+  "language": "uz"
+}

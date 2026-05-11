@@ -1,0 +1,25 @@
+# Render → New Blueprint → repo tanlang.
+# Frontend repo ildizida, API server/ — startCommand ildizdan npm start.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: toza-yurak
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: cd server && npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: APP_TIMEZONE
+        value: Asia/Tashkent
