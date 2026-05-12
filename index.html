@@ -911,6 +911,11 @@
     useRelative = useRelativeAuto;
     window.__API_RELATIVE__ = useRelative;
   }
+  /* Render (bepul) cold start + Telegram WebView: to‘liq URL ishonchliroq */
+  if (originOk && hostname && /\.onrender\.com$/i.test(hostname)) {
+    useRelative = false;
+    window.__API_RELATIVE__ = false;
+  }
   var base;
   if (preset) {
     base = preset;

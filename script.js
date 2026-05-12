@@ -997,6 +997,17 @@
         }
     }
 
+    /** Render free cold start 30–60s bo‘lishi mumkin — qisqa timeout “server yo‘q” deb qoladi. */
+    function apiProbeTimeoutMs() {
+        try {
+            var h =
+                typeof location !== "undefined" && location.hostname ? String(location.hostname).toLowerCase() : "";
+            if (h.indexOf("onrender.com") !== -1) return 65000;
+            if (isPublicWebHost()) return 35000;
+        } catch (eT) {}
+        return 8000;
+    }
+
     function isLoopbackApiUrl(url) {
         var s = String(url || "").trim();
         return /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(s);
@@ -2262,6 +2273,7 @@
             return j && j.ok === true;
         }
 
+        var probeMs = apiProbeTimeoutMs();
         try {
             if (isApiRelativeMode()) {
                 var ctrl1 = new AbortController();
@@ -2269,7 +2281,7 @@
                     try {
                         ctrl1.abort();
                     } catch (e1) {}
-                }, 8000);
+                }, probeMs);
                 var relOk = false;
                 try {
                     relOk = await ping(apiUrl("/api/health"), ctrl1.signal);
@@ -2284,7 +2296,7 @@
                     try {
                         ctrl0.abort();
                     } catch (e0) {}
-                }, 8000);
+                }, probeMs);
                 var explicitOk = false;
                 try {
                     explicitOk = await ping(apiUrl("/api/health"), ctrl0.signal);
@@ -2321,7 +2333,7 @@
                     try {
                         ctrl2.abort();
                     } catch (e2) {}
-                }, 8000);
+                }, probeMs);
                 var absOk = false;
                 try {
                     absOk = await ping(fallback + "/api/health", ctrl2.signal);
